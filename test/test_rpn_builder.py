@@ -1,6 +1,6 @@
 import pytest
 
-from main import build_rpn
+from src.rpn_builder import build_rpn
 
 
 @pytest.mark.parametrize(
