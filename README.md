@@ -1,10 +1,10 @@
-Building a scientific desktop calculator.
+# Building a Scientific Desktop Calculator
 
-This project has two main goals:
-    1. practice
-    2. showcase how I work
+## Project Goals:
+1. Practice
+2. Showcase how I work
 
-Planned features:
-    - GUI
-    - history
-    - currency converter with updated conversion rates
+## Planned Features:
+- GUI
+- History
+- Currency converter with updated conversion rates
