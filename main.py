@@ -1,9 +1,6 @@
-import sys
 from enum import Enum, auto
 from typing import NamedTuple
 from collections import deque
-
-input = sys.argv[1]
 
 
 class Associativity(Enum):
@@ -28,23 +25,27 @@ type RPN = list[int | float | str]
 
 
 def build_rpn(user_input: str) -> RPN:
+    """
+    Build reverse polish notation from an infix notation to handle easier calculations.
+
+    :param user_input: infix notation input from user
+    :returns RPN: list containing tokens in reverse polish notation
+    """
     rpn: RPN = []
     operators: deque[str] = deque()
 
-    # (1 * 2) - (3 * 4) -> 1 2 * 3 4 * -
-    # 1 + (1 + 1) * 5 -> 1 1 1 + 5 * +
-    """
-               there is an operator o2 at the top of the operator stack which is not a left parenthesis, 
-                and (o2 has greater precedence than o1 or (o1 and o2 have the same precedence and o1 is left-associative))"""
     for char in user_input:
         match char:
             case char if char.isnumeric():
                 num = int(char) if "." or "," in char else float(char)
                 rpn.append(num)
+
             case char if char.isspace():
                 continue
+
             case char if char == "(":
                 operators.appendleft(char)
+
             case char if char in ("+", "-", "*", "/", "^"):
                 if operators:
                     current_operator = precedence.get(char)
@@ -62,47 +63,16 @@ def build_rpn(user_input: str) -> RPN:
                         else:
                             break
                 operators.appendleft(char)
+
             case char if char == ")":
                 while (operator := operators.popleft()) != "(":
                     rpn.append(operator)
+
             case _:
                 raise Exception(f"Unknown token: {char}")
 
     if "(" in operators:
         raise Exception("Dangling left parenthesis")
+
     rpn.extend(operators)
     return rpn
-
-
-# if char.isnumeric():
-#     pass
-# else:
-#     operators.append(char)
-
-# tokens.extend(operators)
-#
-# print(tokens)
-#
-# deck: deque[int | float] = deque()
-#
-# for token in tokens:
-#     if not isinstance(token, str):
-#         deck.append(token)
-#     else:
-#         x, y = deck.popleft(), deck.popleft()
-#         match token:
-#             case '+':
-#                 result = x + y
-#             case '-':
-#                 result = x - y
-#             case '/':
-#                 result = x / y
-#             case '*':
-#                 result = x * y
-#             case '(':
-#
-#             case _:
-#                 raise Exception(f'Unknown operator: {token}')
-#         deck.appendleft(result)
-#
-# print(deck)
