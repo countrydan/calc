@@ -1,6 +1,6 @@
 from numbers import Number
 
-from rpn_builder import RPN, SYMBOLS
+from src.rpn_builder import RPN, SYMBOLS
 
 operations = {
     "+": lambda x, y: x + y,
@@ -11,7 +11,7 @@ operations = {
 }
 
 
-def reduce_rpn(rpn: RPN) -> Number:
+def reduce_rpn(rpn: RPN) -> int | float:
     """
     Reduce a reverse polish notation into a single number.
 
