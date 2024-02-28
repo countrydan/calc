@@ -18,6 +18,8 @@ from src.reduce_rpn import reduce_rpn
             0.25,
         ),
         ("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3", 3.000),
+        ("sin(90)", 1),
+        ("sin ( log( 2 ) / 3 * π )", 0.006),
     ],
 )
 def test_reduce_rpn(test_input, expected):
@@ -27,7 +29,7 @@ def test_reduce_rpn(test_input, expected):
 
 
 def test_dangling_expression():
-    with pytest.raises(Exception, match=re.escape("Dangling expression: 1 1 + +")):
+    with pytest.raises(Exception, match=re.escape("Invalid expression: 1 1 + +")):
         user_input = "1+1+"
         rpn = build_rpn(user_input)
         reduce_rpn(rpn)
