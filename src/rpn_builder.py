@@ -92,7 +92,7 @@ def build_rpn(user_input: str) -> RPN:
                 rpn.append(operators.popleft())
 
     if "(" in operators:
-        raise Exception("Dangling left parenthesis")
+        raise MismatchedParentheses(user_input)
 
     rpn.extend(operators)
     return rpn
@@ -107,19 +107,27 @@ def tokenize(user_input: str) -> list[str]:
     """
     tokens = []
     num_stack = ""
+    fn_stack = ""
 
     for char in user_input:
         if char.isnumeric() or char == ".":
             num_stack += char
-        elif char in SYMBOLS + ("(", ")"):
+        elif char in SYMBOLS + ("(", ")", ","):
             if num_stack:
                 tokens.append(num_stack)
                 num_stack = ""
+            if fn_stack:
+                tokens.append(fn_stack)
+                fn_stack = ""
             tokens.append(char)
+        elif char.isalpha():
+            fn_stack += char
         elif char.isspace():
             continue
         else:
             raise Exception(f"Unknown mathematical token: {char}")
     if num_stack:
         tokens.append(num_stack)
+    if fn_stack:
+        tokens.append(fn_stack)
     return tokens
