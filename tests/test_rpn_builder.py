@@ -1,4 +1,5 @@
 import pytest
+import math
 
 from src.rpn_builder import build_rpn, tokenize
 
@@ -15,6 +16,7 @@ from src.rpn_builder import build_rpn, tokenize
         ),
         ("100+500", [100, 500, "+"]),
         ("0.5 + 12 / 0.25", [0.5, 12, 0.25, "/", "+"]),
+        ("sin ( log( 2 ) / 3 * π )", [2, "log", 3, "/", math.pi, "*", "sin"]),
     ],
 )
 def test_build_rpn(test_input, expected):
@@ -23,7 +25,7 @@ def test_build_rpn(test_input, expected):
 
 
 def test_build_rpn_fail_dangling_parentheses():
-    with pytest.raises(Exception, match="Dangling left parenthesis"):
+    with pytest.raises(Exception, match="Dangling parenthesis"):
         build_rpn("(1+1")
 
 
@@ -37,6 +39,11 @@ def test_build_rpn_fail_dangling_parentheses():
         (
             "100.25 * 15124.12467 / (1 + 3.5)",
             ["100.25", "*", "15124.12467", "/", "(", "1", "+", "3.5", ")"],
+        ),
+        ("sin(45)", ["sin", "(", "45", ")"]),
+        (
+            "sin ( max ( 2, 3 ) / 3 * π )",
+            ["sin", "(", "max", "(", "2", ",", "3", ")", "/", "3", "*", "π", ")"],
         ),
     ],
 )
