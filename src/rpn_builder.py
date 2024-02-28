@@ -1,6 +1,14 @@
 from enum import Enum, auto
 from typing import NamedTuple
 from collections import deque
+import math
+
+
+class MismatchedParentheses(Exception):
+    """Raised when there is a dangling parentheses in the expression"""
+
+    def __init__(self, user_input):
+        super().__init__(f"Dangling parenthesis in expression: {user_input}")
 
 
 class Associativity(Enum):
@@ -23,6 +31,8 @@ precedence: dict[str, Operator] = {
 
 type RPN = list[int | float | str]
 SYMBOLS = ("+", "-", "*", "/", "^")
+FUNCTIONS = ("log", "ln", "sin", "cos", "tan", "sqrt")
+CONSTANTS = {"π": math.pi, "e": math.e}
 
 
 def build_rpn(user_input: str) -> RPN:
@@ -38,9 +48,17 @@ def build_rpn(user_input: str) -> RPN:
     tokens = tokenize(user_input)
 
     for token in tokens:
-        if token.isnumeric() or "." in token:
-            num = float(token) if "." in token else int(token)
+        if token.isnumeric() or "." in token or token in CONSTANTS:
+            if "." in token:
+                num = float(token)
+            elif token in CONSTANTS:
+                num = CONSTANTS[token]
+            else:
+                num = int(token)
             rpn.append(num)
+
+        elif token in FUNCTIONS:
+            operators.appendleft(token)
 
         elif token == "(":
             operators.appendleft(token)
@@ -64,8 +82,14 @@ def build_rpn(user_input: str) -> RPN:
             operators.appendleft(token)
 
         elif token == ")":
-            while (operator := operators.popleft()) != "(":
-                rpn.append(operator)
+            if not operators:
+                raise MismatchedParentheses(user_input)
+            while operators and operators[0] != "(":
+                rpn.append(operators.popleft())
+            if operators[0] == "(":
+                operators.popleft()
+            if operators and operators[0] in FUNCTIONS:
+                rpn.append(operators.popleft())
 
     if "(" in operators:
         raise Exception("Dangling left parenthesis")
